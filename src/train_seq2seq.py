@@ -30,16 +30,31 @@ import keras.backend as K
 parser = argparse.ArgumentParser()
 parser.add_argument('--FN0', default='vocabulary-embedding', help="filename of vocab embeddings")
 parser.add_argument('--FN1', default='train', help="filename of model weights")
-parser.add_argument('--batch-size', type=int, default=32, help='input batch size')
-parser.add_argument('--epochs', type=int, default=10, help='number of epochs')
-parser.add_argument('--maxlend', type=int, default=100, help='max length of description')
-parser.add_argument('--maxlenh', type=int, default=15, help='max length of head')
-parser.add_argument('--rnn-size', type=int, default=512, help='size of RNN layers')
-parser.add_argument('--rnn-layers', type=int, default=3, help='number of RNN layers')
-parser.add_argument('--nsamples', type=int, default=640, help='number of samples per epoch')
+#parser.add_argument('--batch-size', type=int, default=32, help='input batch size')#
+#parser.add_argument('--epochs', type=int, default=10, help='number of epochs')
+#parser.add_argument('--maxlend', type=int, default=100, help='max length of description')
+#parser.add_argument('--maxlenh', type=int, default=15, help='max length of head')
+#parser.add_argument('--rnn-size', type=int, default=512, help='size of RNN layers')
+#parser.add_argument('--rnn-layers', type=int, default=3, help='number of RNN layers')
+#parser.add_argument('--nsamples', type=int, default=640, help='number of samples per epoch')
 parser.add_argument('--nflips', type=int, default=0, help='number of flips')
 parser.add_argument('--temperature', type=float, default=.8, help='RNN temperature')
 parser.add_argument('--lr', type=float, default=0.0001, help='learning rate, default=0.0001')
+
+
+
+#Added to make it faster
+parser.add_argument('--batch-size', type=int, default=8, help='input batch size')
+parser.add_argument('--epochs', type=int, default=1, help='number of epochs')
+parser.add_argument('--maxlend', type=int, default=100, help='max length of description')
+parser.add_argument('--maxlenh', type=int, default=15, help='max length of head')
+parser.add_argument('--rnn-size', type=int, default=512, help='size of RNN layers')
+parser.add_argument('--rnn-layers', type=int, default=1, help='number of RNN layers')
+parser.add_argument('--nsamples', type=int, default=80, help='number of samples per epoch')
+
+
+
+
 args = parser.parse_args()
 
 maxlend = args.maxlend
@@ -154,8 +169,11 @@ def simple_context(X, mask, n=activation_rnn_size, maxlend=maxlend, maxlenh=maxl
     # activation for every head word and every desc word
     activation_energies = K.batch_dot(head_activations, desc_activations, axes=(2, 2))
     # make sure we dont use description words that are masked out
-    activation_energies = activation_energies + -1e20 * K.expand_dims(
-        1. - K.cast(mask[:, :maxlend], 'float32'), 1)
+    try:
+        activation_energies = activation_energies + -1e20 * K.expand_dims(
+            1. - K.cast(mask[:, :maxlend], 'float32'), 1)
+    except:
+        pass
 
     # for every head word compute weights for every desc word
     activation_energies = K.reshape(activation_energies, (-1, maxlend))

@@ -112,7 +112,11 @@ print('random-embedding/glove scale: {:.4f} std: {:.4f}'.format(scale, embedding
 # copy from glove weights of words that appear in our short vocabulary (idx2word)
 c = 0
 for i in range(vocab_size):
-    w = idx2word[i]
+    try:
+        w = idx2word[i]
+    except:
+        #print(i)
+        pass
     g = glove_index_dict.get(w, glove_index_dict.get(w.lower()))
     if g is None and w.startswith('#'):  # glove has no hastags (I think...)
         w = w[1:]
@@ -133,7 +137,10 @@ print('random-embedding/glove scale: {:.4f} std: {:.4f}'.format(scale, embedding
 # copy from glove weights of words that appear in our short vocabulary (idx2word)
 c = 0
 for i in range(vocab_size):
-    w = idx2word[i]
+    try:
+        w = idx2word[i]
+    except:
+        pass
     g = glove_index_dict.get(w, glove_index_dict.get(w.lower()))
     if g is None and w.startswith('#'):  # glove has no hastags (I think...)
         w = w[1:]

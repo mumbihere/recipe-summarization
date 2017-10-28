@@ -1,6 +1,7 @@
 import _pickle as pickle
 from os import path
 from nltk.tokenize import word_tokenize
+from glob import glob
 
 import config
 import prep_data
